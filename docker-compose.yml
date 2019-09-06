@@ -4,12 +4,25 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./prom/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prom/alert.rules:/alertmanager/alert.rules
+      - ./prom/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./prom/alert_rules.yaml:/alertmanager/alert.rules
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
       - 9090:9090
+    depends_on:
+      - alertmanager
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    volumes:
+      - ./prom/alertmanager.yaml:/etc/prometheus/alertmanager.yml
+    command:
+      - '--config.file=/etc/prometheus/alertmanager.yml'
+    ports:
+      - 9093:9093
+
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node_exporter
